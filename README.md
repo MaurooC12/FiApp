@@ -1,6 +1,6 @@
 
 ## 🚀 Objetivo del Proyecto
-> “FiApp transforma el cuaderno del fiado en una herramienta digital inteligente.”
+> “De la libreta al futuro: tus finanzas en la palma de tu mano.”
 
 Facilitar la administración de tiendas locales mediante una plataforma intuitiva que permita:
 - Registrar y actualizar productos del inventario.
