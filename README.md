@@ -1,6 +1,6 @@
 
 ## 🚀 Objetivo del Proyecto
-> “De la libreta al futuro: tus finanzas en la palma de tu mano.”
+> “De la libreta al clic: tus finanzas en la palma de tu mano .”
 
 Facilitar la administración de tiendas locales mediante una plataforma intuitiva que permita:
 - Registrar y actualizar productos del inventario.
