@@ -1,0 +1,40 @@
+from firebase_admin import db
+
+
+class DBService:
+    """
+    CRUD general para locales, productos, clientes y deudas.
+    """
+
+    def __init__(self):
+        self.ref = db.reference("/")
+
+    # --- Productos ---
+    def add_producto(self, local_id, producto_data):
+        new_ref = self.ref.child(f"locales/{local_id}/productos").push(producto_data)
+        return new_ref.key
+
+    def get_productos(self, local_id):
+        return self.ref.child(f"locales/{local_id}/productos").get() or {}
+
+    def update_producto(self, local_id, producto_id, data):
+        self.ref.child(f"locales/{local_id}/productos/{producto_id}").update(data)
+
+    def delete_producto(self, local_id, producto_id):
+        self.ref.child(f"locales/{local_id}/productos/{producto_id}").delete()
+
+    # --- Clientes ---
+    def add_cliente_a_local(self, local_id, cliente_id, cliente_data):
+        self.ref.child(f"locales/{local_id}/clientes/{cliente_id}").set(cliente_data)
+
+    def get_clientes(self, local_id):
+        return self.ref.child(f"locales/{local_id}/clientes").get() or {}
+
+    def get_cliente(self, local_id, cliente_id):
+        return self.ref.child(f"locales/{local_id}/clientes/{cliente_id}").get()
+
+    # --- Deudas ---
+    def registrar_deuda(self, local_id, cliente_id, monto):
+        deuda_ref = self.ref.child(f"locales/{local_id}/clientes/{cliente_id}/deuda")
+        deuda_actual = deuda_ref.get() or 0
+        deuda_ref.set(deuda_actual + monto)

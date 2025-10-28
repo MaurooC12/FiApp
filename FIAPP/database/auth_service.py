@@ -1,24 +1,28 @@
-from database.firebase_config import db
+from firebase_admin import auth, db
+
 
 class AuthService:
-    def __init__(self):
-        self.ref_usuarios = db.reference("usuarios")
+    """
+    Maneja autenticación y registro de usuarios con Firebase Auth y DB.
+    """
 
-    def crear_usuario(self, uid, nombre, email, rol="cliente"):
-        """Crea un nuevo usuario con un rol."""
-        self.ref_usuarios.child(uid).set({
-            "nombre": nombre,
+    def register_user(self, email, password, role):
+        user = auth.create_user(email=email, password=password)
+        ref = db.reference(f"usuarios/{user.uid}")
+        ref.set({
             "email": email,
-            "rol": rol
+            "rol": role
         })
-        print(f"✅ Usuario '{nombre}' creado como {rol}")
+        return user.uid
 
-    def obtener_rol(self, uid):
-        """Devuelve el rol del usuario."""
-        data = self.ref_usuarios.child(uid).get()
-        return data.get("rol") if data else None
+    def get_user_role(self, uid):
+        ref = db.reference(f"usuarios/{uid}/rol")
+        return ref.get()
 
-    def cambiar_rol(self, uid, nuevo_rol):
-        """Cambia el rol del usuario (solo admin)."""
-        self.ref_usuarios.child(uid).update({"rol": nuevo_rol})
-        print(f"🔄 Rol de {uid} actualizado a {nuevo_rol}")
+    def list_users(self):
+        ref = db.reference("usuarios")
+        return ref.get() or {}
+
+    def delete_user(self, uid):
+        auth.delete_user(uid)
+        db.reference(f"usuarios/{uid}").delete()
