@@ -14,13 +14,16 @@ class UserManager:
 
     def listar_usuarios(self):
         usuarios = self.auth.list_users()
-        if not usuarios:
-            print("No hay usuarios registrados.")
-            return
-        print("\n=== Lista de usuarios ===")
-        for uid, data in usuarios.items():
-            print(f"- UID: {uid} | Email: {data['email']} | Rol: {data['rol']}")
-
+        try: 
+            print("\n=== Lista de usuarios ===")
+            for uid, data in usuarios.items():
+                print(f"- UID: {uid} | Email: {data['email']} | Rol: {data['rol']}")
+        except Exception as e:
+            print(f"❌ Error listando usuarios: {e}")
+            if not usuarios:
+                print("No hay usuarios registrados.")
+        return
+       
     def eliminar_usuario(self, uid):
         try:
             self.auth.delete_user(uid)

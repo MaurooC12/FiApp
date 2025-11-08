@@ -1,6 +1,6 @@
 from database.firebase_config import init_firebase
 from database.auth_service import AuthService
-from presentation.viewmodel import ViewModel
+from presentation.presentation import ViewModel
 from ui.console import ConsoleUI
 
 

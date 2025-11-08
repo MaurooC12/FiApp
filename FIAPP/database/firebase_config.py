@@ -1,13 +1,13 @@
 import os
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials , db
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
 def init_firebase():
-    cred_path = os.getenv("FIREBASE_CREDENTIALS_PATH")
+    cred_path = os.getenv("FIREBASE_CREDENTIALS_JSON")
     db_url = os.getenv("FIREBASE_DB_URL")
 
     if not firebase_admin._apps:

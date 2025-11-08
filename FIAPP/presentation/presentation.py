@@ -1,5 +1,5 @@
-from domain.use_cases import UseCases
-from domain.user_manager import UserManager
+from ViewModel.use_cases import UseCases
+from ViewModel.user_manager import UserManager
 
 
 class ViewModel:

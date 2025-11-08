@@ -46,7 +46,7 @@ class UseCases:
             print("No hay clientes en este local.")
             return
         for cid, c in clientes.items():
-            print(f"- {c['nombre']} ({c['email']}) | Deuda: ${c.get('deuda', 0)}")
+            print(f"[{cid}] - {c['nombre']} ({c['email']}) | Deuda: ${c.get('deuda', 0)}")
 
     def registrar_deuda(self, local_id, cliente_id, monto):
         self.db.registrar_deuda(local_id, cliente_id, monto)
