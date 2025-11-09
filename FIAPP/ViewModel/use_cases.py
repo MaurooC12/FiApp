@@ -1,5 +1,6 @@
 from domain.producto import Producto
 from database.db_service import DBService
+from domain.local import Local
 
 
 class UseCases:
@@ -7,9 +8,9 @@ class UseCases:
         self.db = DBService()
 
     # --- CRUD de Productos ---
-    def crear_producto(self, local_id, nombre, precio, stock):
+    def crear_producto(self, local_id, nombre, precio, stock,producto_id):
         producto = Producto(nombre, precio, stock)
-        key = self.db.add_producto(local_id, producto.to_dict())
+        key = self.db.add_producto(local_id, producto.to_dict(),producto_id)
         print(f"✅ Producto '{nombre}' agregado con ID: {key}")
 
     def listar_productos(self, local_id):
@@ -51,3 +52,40 @@ class UseCases:
     def registrar_deuda(self, local_id, cliente_id, monto):
         self.db.registrar_deuda(local_id, cliente_id, monto)
         print(f"💰 Deuda de ${monto} añadida al cliente {cliente_id}.")
+  
+    # --- Locales ---
+    def crear_local(self, nombre, propietario_id, local_id):
+        local = Local(nombre, propietario_id)
+        self.db.add_local(local_id, local_data=local.local_create())
+        print(f"✅ Local '{local_id}' creado.")
+    
+    def obtener_local(self, local_id):
+        local = self.db.get_local(local_id)
+        while not local:
+            print("❌ Local no encontrado.")
+            local_id = input("Ingrese un ID de local válido: ")
+            local = self.db.get_local(local_id)
+        print(f"Local ID: {local_id} | Datos: {local}")
+        return local
+    
+    def actualizar_local(self, local_id, data):
+        self.db.update_local(local_id, data)
+        print(f"✅ Local '{local_id}' actualizado.")
+
+    def eliminar_local(self, local_id):
+        while not self.db.get_local(local_id):
+            print("❌ Local no encontrado.")
+            local_id = input("Ingrese un ID de local válido: ")
+            self.eliminar_local(local_id)
+        self.db.delete_local(local_id)
+        print(f"🗑️ Local '{local_id}' eliminado.")
+    
+    def _listar_locales(self):
+        locales = self.db.ref.child("locales").get() or {}
+        if not locales:
+            print("No hay locales registrados.")
+            return
+        for lid, l in locales.items():
+            print(f"[{lid}] - {l['nombre']} | Propietario: {l['propietario_id']}")
+        return locales
+    

@@ -1,7 +1,7 @@
 from database.auth_service import AuthService
 
 
-class UserManager:
+class Administrador:
     def __init__(self):
         self.auth = AuthService()
 

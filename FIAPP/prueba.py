@@ -7,18 +7,7 @@ from database.firebase_config import init_firebase
 load_dotenv()
 
 # Usar las mismas variables que el resto del proyecto
-'''cred_path = os.getenv("FIREBASE_CREDENTIAL_JSON")
-db_url = os.getenv("FIREBASE_DATABASE_URL")
 
-if not cred_path:
-    raise RuntimeError("FIREBASE_CREDENTIAL_JSON no está definido en .env")
-
-cred = credentials.Certificate(cred_path)
-if db_url:
-    firebase_admin.initialize_app(cred, {"databaseURL": db_url})
-else:
-    firebase_admin.initialize_app(cred)
-'''
 init_firebase()
 # Crear usuario
 authe = AuthService()

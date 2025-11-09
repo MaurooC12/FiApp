@@ -8,11 +8,18 @@ class DBService:
 
     def __init__(self):
         self.ref = db.reference("/")
-
+    @property
+    def key(self):
+        return self.ref.key
+    @key.setter
+    def key(self, value):
+        self.ref.key = value
     # --- Productos ---
-    def add_producto(self, local_id, producto_data):
-        new_ref = self.ref.child(f"locales/{local_id}/productos").push(producto_data)
-        return new_ref.key
+    def add_producto(self, local_id, producto_data, producto_id):
+        # Crear referencia directamente con el ID proporcionado
+        new_ref = self.ref.child(f"locales/{local_id}/productos/{producto_id}")
+        new_ref.set(producto_data)
+        return producto_id
 
     def get_productos(self, local_id):
         return self.ref.child(f"locales/{local_id}/productos").get() or {}
@@ -38,3 +45,16 @@ class DBService:
         deuda_ref = self.ref.child(f"locales/{local_id}/clientes/{cliente_id}/deuda")
         deuda_actual = deuda_ref.get() or 0
         deuda_ref.set(deuda_actual + monto)
+   
+    # --- Locales ---
+    def add_local(self, local_id, local_data):
+        self.ref.child(f"locales/{local_id}").set(local_data)
+    
+    def get_local(self, local_id):
+        return self.ref.child(f"locales/{local_id}").get()
+    
+    def update_local(self, local_id, data):
+        self.ref.child(f"locales/{local_id}").update(data)
+
+    def delete_local(self, local_id):
+        self.ref.child(f"locales/{local_id}").delete()

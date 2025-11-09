@@ -26,6 +26,7 @@ class ConsoleUI:
             print("1. Crear usuario")
             print("2. Listar usuarios")
             print("3. Eliminar usuario")
+            print("4. Cambiar de usuario")
             print("0. Salir")
 
             op = input("> ")
@@ -40,7 +41,12 @@ class ConsoleUI:
             elif op == "3":
                 uid = input("UID del usuario a eliminar: ")
                 self.vm.admin_eliminar_usuario(uid)
+            elif op == "4":
+                print("Cambiando de usuario...\n\n")
+                self.run()
+                break
             elif op == "0":
+                print("Saliendo...")
                 break
             else:
                 print("Opción inválida.")
@@ -56,6 +62,8 @@ class ConsoleUI:
             print("5. Listar clientes")
             print("6. Añadir cliente")
             print("7. Registrar deuda")
+            print("8. Cambiar de usuario")
+            print("9. Locales")
             print("0. Salir")
 
             op = input("> ")
@@ -69,7 +77,8 @@ class ConsoleUI:
                 nombre = input("Nombre del producto: ")
                 precio = float(input("Precio: "))
                 stock = int(input("Stock: "))
-                self.vm.crear_producto(local, nombre, precio, stock)
+                producto_id = input("ID del producto: ")
+                self.vm.crear_producto(local, nombre, precio, stock, producto_id)
 
             elif op == "3":
                 local = input("ID del local: ")
@@ -104,6 +113,73 @@ class ConsoleUI:
                 self.vm.registrar_deuda(local, cliente, monto)
 
             elif op == "0":
+                print("Saliendo...")
+                self.vm.current_user = None
                 break
+            elif op == "8":
+                print("Cambiando de usuario...")
+                break
+                self.run()
+            elif op == "9":
+                self.menu_locales()
             else:
                 print("Opción inválida.")
+
+    
+    def menu_locales(self):
+        while True:
+            print("\n=== Gestión de Locales ===")
+            print("1. Crear local")
+            print("2. Obtener local")
+            print("3. Actualizar local")
+            print("4. Eliminar local")
+            print("5. Mis locales")
+            print("0. Volver al menú anterior")
+            op = input("> ")
+
+            if op == "1":
+                nombre = input("Nombre del local: ")
+                propietario_id = input("UID del propietario: ")
+                local_id = input("ID del local: ")
+                self.vm.crear_local(nombre, propietario_id, local_id)
+            
+            elif op == "2":
+                local_id = input("ID del local: ")
+                self.vm.obtener_local(local_id)
+            
+            elif op == "3":
+                local_id = input("ID del local: ")
+                data = {}
+                nombre = input("Nuevo nombre (Enter para omitir): ")
+                if nombre:
+                    data["nombre"] = nombre
+                propietario_id = input("Nuevo UID del propietario (Enter para omitir): ")
+                if propietario_id:
+                    data["propietario_id"] = propietario_id
+                self.vm.actualizar_local(local_id, data)
+
+            elif op == "4":
+                local_id = input("ID del local: ")
+                self.vm.eliminar_local(local_id)
+            
+            elif op =="5":
+                propietario_id = self.vm.current_user["uid"]
+                print(f"Locales del propietario {propietario_id}:")
+                locales = self.vm._listar_locales()
+                encontrados = False
+                for lid, ldata in locales.items():
+                    if ldata.get("propietario_id") == propietario_id:
+                        print(f"- ID: {lid}, Nombre: {ldata.get('nombre')}")
+                        encontrados = True
+                if not encontrados:
+                    print("No tienes locales registrados.")
+                
+            elif op == "0":
+                break
+                self.run()
+            else:
+                print("Opción inválida.")
+        
+            
+
+
