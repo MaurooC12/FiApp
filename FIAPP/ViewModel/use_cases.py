@@ -49,9 +49,21 @@ class UseCases:
         for cid, c in clientes.items():
             print(f"[{cid}] - {c['nombre']} ({c['email']}) | Deuda: ${c.get('deuda', 0)}")
 
-    def registrar_deuda(self, local_id, cliente_id, monto):
-        self.db.registrar_deuda(local_id, cliente_id, monto)
-        print(f"💰 Deuda de ${monto} añadida al cliente {cliente_id}.")
+    def registrar_deuda(self, local_id, cliente_id, monto, plazo_dias=None):
+        self.db.registrar_deuda(local_id, cliente_id, monto, plazo_dias)
+        if plazo_dias:
+            print(f"💰 Deuda de ${monto} añadida al cliente {cliente_id} a pagar en {plazo_dias} días.")
+        else:
+            print(f"💰 Deuda de ${monto} añadida al cliente {cliente_id}.")
+
+    def obtener_historial_deudas(self, local_id, cliente_id):
+        """Devuelve un diccionario con los registros de deudas de un cliente en un local.
+
+        Estructura retornada: { timestamp: {"monto": float, "timestamp": int, "plazo_dias": int?}, ... }
+        """
+        # Intentar obtener el nodo de deudas directamente
+        detalles = self.db.ref.child(f"locales/{local_id}/clientes/{cliente_id}/deudas").get() or {}
+        return detalles
   
     # --- Locales ---
     def crear_local(self, nombre, propietario_id, local_id):

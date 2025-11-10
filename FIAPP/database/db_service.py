@@ -41,10 +41,34 @@ class DBService:
         return self.ref.child(f"locales/{local_id}/clientes/{cliente_id}").get()
 
     # --- Deudas ---
-    def registrar_deuda(self, local_id, cliente_id, monto):
+    def registrar_deuda(self, local_id, cliente_id, monto, plazo_dias=None):
+        """Registra una deuda para un cliente.
+
+        - Actualiza el acumulado numérico en 'deuda'.
+        - Añade un registro individual bajo 'deudas/<timestamp>' con monto y plazo (si se proporciona).
+        """
+        # Actualizar suma total de deuda
         deuda_ref = self.ref.child(f"locales/{local_id}/clientes/{cliente_id}/deuda")
         deuda_actual = deuda_ref.get() or 0
-        deuda_ref.set(deuda_actual + monto)
+        try:
+            nueva_total = float(deuda_actual) + float(monto)
+        except Exception:
+            # Fallback si hay datos corruptos
+            nueva_total = float(monto)
+        deuda_ref.set(nueva_total)
+
+        # Agregar registro detallado de la deuda
+        import time
+        timestamp = str(int(time.time()))
+        detalle = {"monto": float(monto), "timestamp": int(timestamp)}
+        if plazo_dias is not None:
+            try:
+                detalle["plazo_dias"] = int(plazo_dias)
+            except Exception:
+                detalle["plazo_dias"] = plazo_dias
+
+        detalles_ref = self.ref.child(f"locales/{local_id}/clientes/{cliente_id}/deudas")
+        detalles_ref.child(timestamp).set(detalle)
    
     # --- Locales ---
     def add_local(self, local_id, local_data):

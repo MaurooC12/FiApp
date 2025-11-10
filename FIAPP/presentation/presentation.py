@@ -61,8 +61,8 @@ class ViewModel:
     def listar_clientes(self, local_id):
         self.use_cases.listar_clientes(local_id)
 
-    def registrar_deuda(self, local_id, cliente_id, monto):
-        self.use_cases.registrar_deuda(local_id, cliente_id, monto)
+    def registrar_deuda(self, local_id, cliente_id, monto, plazo_dias=None):
+        self.use_cases.registrar_deuda(local_id, cliente_id, monto, plazo_dias)
     #---Locales ---
     def crear_local(self, nombre, propietario_id, local_id):
         self.use_cases.crear_local(nombre, propietario_id, local_id)
@@ -78,4 +78,12 @@ class ViewModel:
     
     def _listar_locales(self):
         return self.use_cases._listar_locales()
+
+    # --- Usuario: historial de deudas ---
+    def obtener_historial_deudas(self, local_id, cliente_id):
+        """Retorna el historial de deudas (diccionario) para un cliente en un local.
+
+        Devuelve {} si no hay registros.
+        """
+        return self.use_cases.obtener_historial_deudas(local_id, cliente_id)
         
