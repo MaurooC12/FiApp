@@ -1,33 +1,63 @@
 import tkinter as tk
-from tkinter import ttk, simpledialog, messagebox
-from tkinter import scrolledtext
+from tkinter import ttk, messagebox, scrolledtext
 
 
-class TkinterUI:
+class TkinterUI(tk.Tk):
+    """Aplicación principal con patrón de stacked frames"""
+    
     def __init__(self, view_model):
+        super().__init__()
         self.vm = view_model
-        self.root = tk.Tk()
-        self.root.title("FiApp")
-        self.root.geometry("900x650+350+35")
-        self.root.iconbitmap("LogoFiApp.ico")
+        
+        self.title("FiApp - Sistema de Administración para Tenderos")
+        self.geometry("900x650+350+50")
+        self.iconbitmap("LogoFiApp.ico")
         
         # Configurar estilo
         self.style = ttk.Style()
         self.style.theme_use('clam')
         
-        self.current_frame = None
-
+        # Contenedor principal
+        container = ttk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+        
+        # Diccionario de vistas
+        self.frames = {}
+        
+        # Lista de vistas a crear
+        for ViewClass in (LoginView, AdminMenuView, TenderoMenuView, 
+                         CrearUsuarioView, ListarUsuariosView, EliminarUsuarioView,
+                         ProductosMenuView, ListarProductosView, CrearProductoView,
+                         ActualizarProductoView, EliminarProductoView,
+                         ClientesMenuView, ListarClientesView, RegistrarClienteView,
+                         RegistrarDeudaView,
+                         LocalesMenuView, CrearLocalView, ObtenerLocalView,
+                         ActualizarLocalView, EliminarLocalView, MisLocalesView):
+            view = ViewClass(container, self, view_model)
+            self.frames[ViewClass.__name__] = view
+            view.grid(row=0, column=0, sticky="nsew")
+        
+        self.show_frame("LoginView")
+    
+    def show_frame(self, name: str):
+        """Muestra una vista específica"""
+        frame = self.frames[name]
+        frame.tkraise()
+    
     def run(self):
         """Inicia la aplicación"""
-        self.show_login_screen()
-        self.root.mainloop()
+        self.mainloop()
 
-    def clear_frame(self):
-        """Limpia el frame actual"""
-        if self.current_frame:
-            self.current_frame.destroy()
-        self.current_frame = ttk.Frame(self.root)
-        self.current_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+class BaseView(ttk.Frame):
+    """Clase base para todas las vistas"""
+    
+    def __init__(self, parent, controller, view_model):
+        super().__init__(parent)
+        self.controller = controller
+        self.vm = view_model
 
     # ========== PANTALLA DE LOGIN ==========
     def show_login_screen(self):
