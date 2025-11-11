@@ -35,7 +35,8 @@ class ConsoleUI:
                 email = input("Email: ")
                 password = input("Contraseña: ")
                 rol = input("Rol (admin/tendero/cliente): ")
-                self.vm.admin_crear_usuario(email, password, rol)
+                user_uid = input("UID del usuario: ")
+                self.vm.admin_crear_usuario(email, password, rol, user_uid)
             elif op == "2":
                 self.vm.admin_listar_usuarios()
             elif op == "3":

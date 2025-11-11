@@ -5,15 +5,17 @@ class AuthService:
     """
     Maneja autenticación y registro de usuarios con Firebase Auth y DB.
     """
-
-    def register_user(self, email, password, role):
+    def __init__(self):
+        self.ref = db.reference("/")
+    
+    def register_user(self, email, password, role ,user_id):
         user = auth.create_user(email=email, password=password)
-        ref = db.reference(f"usuarios/{user.uid}")
+        ref = self.ref.child(f"usuarios/{user_id}")
         ref.set({
             "email": email,
             "rol": role
         })
-        return user.uid
+        return user_id
 
     def get_user_role(self, uid):
         ref = db.reference(f"usuarios/{uid}/rol")

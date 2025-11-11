@@ -5,9 +5,9 @@ class Administrador:
     def __init__(self):
         self.auth = AuthService()
 
-    def crear_usuario(self, email, password, rol):
+    def crear_usuario(self, email, password, rol,user_id):
         try:
-            uid = self.auth.register_user(email, password, rol)
+            uid = self.auth.register_user(email, password, rol,user_id)
             print(f"✅ Usuario '{email}' creado con rol '{rol}' (UID: {uid})")
         except Exception as e:
             print(f"❌ Error creando usuario: {e}")

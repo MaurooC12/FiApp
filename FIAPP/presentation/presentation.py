@@ -20,12 +20,12 @@ class ViewModel:
         print(f"Sesión iniciada como {rol} ({uid})")
 
     # --- Admin ---
-    def admin_crear_usuario(self, email, password, rol):
+    def admin_crear_usuario(self, email, password, rol,user_id):
         while self.current_user["rol"] != "admin":
             print("❌ Solo los administradores pueden crear usuarios.")
             chage_user = input("Ingrese su UID de administrador: ")
             self.login(chage_user)
-        self.user_manager.crear_usuario(email, password, rol)
+        self.user_manager.crear_usuario(email, password, rol,user_id)
 
     def admin_listar_usuarios(self):
         while self.current_user["rol"] != "admin":
