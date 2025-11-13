@@ -37,6 +37,12 @@ class App(tk.Tk): # Aplicación principal basado en stacked
         # Lista de clases de vistas de diálogos
         dialog_views = (
             TenderoRegistrarDeudaView,
+            TenderoListarProductosView,
+            TenderoCrearProductoView,
+            TenderoActualizarProductoView,
+            TenderoEliminarProductoView,
+            TenderoListarClientesView,
+            TenderoAñadirClienteView,
             UsuarioConsultarDeudasView,
             UsuarioDetallesDeudasView,
             UsuarioVerTransaccionesView,
@@ -367,16 +373,16 @@ class TenderoView(BaseView):
         button_frame.pack(pady=20)
         
         # Botones del menú (exactamente como en consola)
-        ttk.Button(button_frame, text="Listar productos", width=40).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Crear producto", width=40).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Actualizar producto", width=40).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Eliminar producto", width=40).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Listar clientes", width=40).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Añadir cliente", width=40).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Registrar deuda", width=40, command=lambda: controller.show_frame("TenderoRegistrarDeudaView")).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Cambiar de usuario", command=lambda: controller.show_frame("LoginView"), width=40).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Listar productos", width=40, command=lambda: self.controller.show_frame("TenderoListarProductosView")).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Crear producto", width=40, command=lambda: self.controller.show_frame("TenderoCrearProductoView")).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Actualizar producto", width=40, command=lambda: self.controller.show_frame("TenderoActualizarProductoView")).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Eliminar producto", width=40, command=lambda: self.controller.show_frame("TenderoEliminarProductoView")).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Listar clientes", width=40, command=lambda: self.controller.show_frame("TenderoListarClientesView")).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Añadir cliente", width=40, command=lambda: self.controller.show_frame("TenderoAñadirClienteView")).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Registrar deuda", width=40, command=lambda: self.controller.show_frame("TenderoRegistrarDeudaView")).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Cambiar de usuario", command=lambda: self.controller.show_frame("LoginView"), width=40).pack(pady=5, fill="x")
         ttk.Button(button_frame, text="Locales", width=40).pack(pady=5, fill="x")
-        ttk.Button(button_frame, text="Salir", command=controller.quit, width=40).pack(pady=5, fill="x")
+        ttk.Button(button_frame, text="Salir", command=self.controller.quit, width=40).pack(pady=5, fill="x")
 
 
 # ========== VISTA DE USUARIO ==========
@@ -841,6 +847,420 @@ class UsuarioHistorialDeudasView(BaseView):
             monto = detalle.get("monto", "-")
             plazo = detalle.get("plazo_dias", "-")
             self.tree.insert("", "end", values=(fecha, monto, plazo))
+
+
+# ========== VISTA TENDERO: LISTAR PRODUCTOS ==========
+
+class TenderoListarProductosView(BaseView):
+    """Vista para listar productos de una local"""
+    
+    def __init__(self, parent, controller, view_model):
+        super().__init__(parent, controller, view_model)
+        
+        main_frame = ttk.Frame(self, padding=20)
+        main_frame.pack(fill="both", expand=True)
+        
+        title = ttk.Label(main_frame, text="Listar Productos", font=("Segoe UI", 14, "bold"))
+        title.pack(pady=10)
+        
+        # Frame para entrada de local_id
+        input_frame = ttk.Frame(main_frame)
+        input_frame.pack(pady=10)
+        
+        ttk.Label(input_frame, text="ID del Local:").pack(side="left", padx=5)
+        self.entrada_local_id = ttk.Entry(input_frame, width=20)
+        self.entrada_local_id.pack(side="left", padx=5)
+        self.entrada_local_id.focus()
+        
+        ttk.Button(input_frame, text="Buscar", command=self._cargar_productos).pack(side="left", padx=5)
+        
+        # Treeview para mostrar productos
+        columns = ("Producto ID", "Nombre", "Precio", "Stock")
+        self.tree = ttk.Treeview(main_frame, columns=columns, height=15)
+        self.tree.column("#0", width=0, stretch="no")
+        self.tree.column("Producto ID", anchor="center", width=100)
+        self.tree.column("Nombre", anchor="w", width=150)
+        self.tree.column("Precio", anchor="center", width=100)
+        self.tree.column("Stock", anchor="center", width=80)
+        
+        self.tree.heading("Producto ID", text="Producto ID")
+        self.tree.heading("Nombre", text="Nombre")
+        self.tree.heading("Precio", text="Precio")
+        self.tree.heading("Stock", text="Stock")
+        self.tree.pack(fill="both", expand=True, pady=10)
+        
+        # Botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=10)
+        ttk.Button(btn_frame, text="Atrás", command=lambda: self.controller.go_back()).pack(side="left", padx=5)
+    
+    def _cargar_productos(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        
+        local_id = self.entrada_local_id.get().strip()
+        if not local_id:
+            messagebox.showerror("Error", "Ingrese un ID de local")
+            return
+        
+        try:
+            productos = self.vm.listar_productos(local_id)
+            if productos:
+                for prod_id, prod_data in productos.items():
+                    nombre = prod_data.get("nombre", "-")
+                    precio = prod_data.get("precio", "-")
+                    stock = prod_data.get("stock", "-")
+                    self.tree.insert("", "end", values=(prod_id, nombre, precio, stock))
+            else:
+                messagebox.showinfo("Resultado", "No hay productos registrados")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudieron cargar los productos:\n{e}")
+
+
+# ========== VISTA TENDERO: CREAR PRODUCTO ==========
+
+class TenderoCrearProductoView(BaseView):
+    """Vista para crear un nuevo producto"""
+    
+    def __init__(self, parent, controller, view_model):
+        super().__init__(parent, controller, view_model)
+        
+        main_frame = ttk.Frame(self, padding=20)
+        main_frame.pack(fill="both", expand=True)
+        
+        title = ttk.Label(main_frame, text="Crear Producto", font=("Segoe UI", 14, "bold"))
+        title.pack(pady=10)
+        
+        # Formulario
+        form_frame = ttk.Frame(main_frame)
+        form_frame.pack(pady=10)
+        
+        ttk.Label(form_frame, text="ID del Local:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_local_id = ttk.Entry(form_frame, width=30)
+        self.entrada_local_id.grid(row=0, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="ID del Producto:").grid(row=1, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_prod_id = ttk.Entry(form_frame, width=30)
+        self.entrada_prod_id.grid(row=1, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="Nombre:").grid(row=2, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_nombre = ttk.Entry(form_frame, width=30)
+        self.entrada_nombre.grid(row=2, column=1, padx=10, pady=5)
+        self.entrada_nombre.focus()
+        
+        ttk.Label(form_frame, text="Precio:").grid(row=3, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_precio = ttk.Entry(form_frame, width=30)
+        self.entrada_precio.grid(row=3, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="Stock:").grid(row=4, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_stock = ttk.Entry(form_frame, width=30)
+        self.entrada_stock.grid(row=4, column=1, padx=10, pady=5)
+        
+        # Botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=10)
+        ttk.Button(btn_frame, text="Crear", command=self._submit).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Atrás", command=lambda: self.controller.go_back()).pack(side="left", padx=5)
+    
+    def _submit(self):
+        local_id = self.entrada_local_id.get().strip()
+        prod_id = self.entrada_prod_id.get().strip()
+        nombre = self.entrada_nombre.get().strip()
+        precio_str = self.entrada_precio.get().strip()
+        stock_str = self.entrada_stock.get().strip()
+        
+        if not all([local_id, prod_id, nombre, precio_str, stock_str]):
+            messagebox.showerror("Error", "Complete todos los campos")
+            return
+        
+        try:
+            precio = float(precio_str)
+            stock = int(stock_str)
+            self.vm.crear_producto(local_id, nombre, precio, stock, prod_id)
+            messagebox.showinfo("Éxito", "Producto creado correctamente")
+            self.entrada_local_id.delete(0, "end")
+            self.entrada_prod_id.delete(0, "end")
+            self.entrada_nombre.delete(0, "end")
+            self.entrada_precio.delete(0, "end")
+            self.entrada_stock.delete(0, "end")
+            self.entrada_nombre.focus()
+        except ValueError:
+            messagebox.showerror("Error", "Precio debe ser número y Stock debe ser entero")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo crear el producto:\n{e}")
+
+
+# ========== VISTA TENDERO: ACTUALIZAR PRODUCTO ==========
+
+class TenderoActualizarProductoView(BaseView):
+    """Vista para actualizar un producto"""
+    
+    def __init__(self, parent, controller, view_model):
+        super().__init__(parent, controller, view_model)
+        
+        main_frame = ttk.Frame(self, padding=20)
+        main_frame.pack(fill="both", expand=True)
+        
+        title = ttk.Label(main_frame, text="Actualizar Producto", font=("Segoe UI", 14, "bold"))
+        title.pack(pady=10)
+        
+        # Formulario
+        form_frame = ttk.Frame(main_frame)
+        form_frame.pack(pady=10)
+        
+        ttk.Label(form_frame, text="ID del Local:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_local_id = ttk.Entry(form_frame, width=30)
+        self.entrada_local_id.grid(row=0, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="ID del Producto:").grid(row=1, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_prod_id = ttk.Entry(form_frame, width=30)
+        self.entrada_prod_id.grid(row=1, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="Nuevo Nombre:").grid(row=2, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_nombre = ttk.Entry(form_frame, width=30)
+        self.entrada_nombre.grid(row=2, column=1, padx=10, pady=5)
+        self.entrada_nombre.focus()
+        
+        ttk.Label(form_frame, text="Nuevo Precio:").grid(row=3, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_precio = ttk.Entry(form_frame, width=30)
+        self.entrada_precio.grid(row=3, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="Nuevo Stock:").grid(row=4, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_stock = ttk.Entry(form_frame, width=30)
+        self.entrada_stock.grid(row=4, column=1, padx=10, pady=5)
+        
+        # Botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=10)
+        ttk.Button(btn_frame, text="Actualizar", command=self._submit).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Atrás", command=lambda: self.controller.go_back()).pack(side="left", padx=5)
+    
+    def _submit(self):
+        local_id = self.entrada_local_id.get().strip()
+        prod_id = self.entrada_prod_id.get().strip()
+        nombre = self.entrada_nombre.get().strip()
+        precio_str = self.entrada_precio.get().strip()
+        stock_str = self.entrada_stock.get().strip()
+        
+        if not all([local_id, prod_id, nombre, precio_str, stock_str]):
+            messagebox.showerror("Error", "Complete todos los campos")
+            return
+        
+        try:
+            precio = float(precio_str)
+            stock = int(stock_str)
+            self.vm.actualizar_producto(local_id, prod_id, nombre, precio, stock)
+            messagebox.showinfo("Éxito", "Producto actualizado correctamente")
+            self.entrada_local_id.delete(0, "end")
+            self.entrada_prod_id.delete(0, "end")
+            self.entrada_nombre.delete(0, "end")
+            self.entrada_precio.delete(0, "end")
+            self.entrada_stock.delete(0, "end")
+            self.entrada_nombre.focus()
+        except ValueError:
+            messagebox.showerror("Error", "Precio debe ser número y Stock debe ser entero")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo actualizar el producto:\n{e}")
+
+
+# ========== VISTA TENDERO: ELIMINAR PRODUCTO ==========
+
+class TenderoEliminarProductoView(BaseView):
+    """Vista para eliminar un producto"""
+    
+    def __init__(self, parent, controller, view_model):
+        super().__init__(parent, controller, view_model)
+        
+        main_frame = ttk.Frame(self, padding=20)
+        main_frame.pack(fill="both", expand=True)
+        
+        title = ttk.Label(main_frame, text="Eliminar Producto", font=("Segoe UI", 14, "bold"))
+        title.pack(pady=10)
+        
+        # Formulario
+        form_frame = ttk.Frame(main_frame)
+        form_frame.pack(pady=10)
+        
+        ttk.Label(form_frame, text="ID del Local:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_local_id = ttk.Entry(form_frame, width=30)
+        self.entrada_local_id.grid(row=0, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="ID del Producto:").grid(row=1, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_prod_id = ttk.Entry(form_frame, width=30)
+        self.entrada_prod_id.grid(row=1, column=1, padx=10, pady=5)
+        self.entrada_prod_id.focus()
+        
+        # Botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=10)
+        ttk.Button(btn_frame, text="Eliminar", command=self._submit).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Atrás", command=lambda: self.controller.go_back()).pack(side="left", padx=5)
+    
+    def _submit(self):
+        local_id = self.entrada_local_id.get().strip()
+        prod_id = self.entrada_prod_id.get().strip()
+        
+        if not local_id or not prod_id:
+            messagebox.showerror("Error", "Complete todos los campos")
+            return
+        
+        if messagebox.askyesno("Confirmar", "¿Está seguro de que desea eliminar este producto?"):
+            try:
+                self.vm.eliminar_producto(local_id, prod_id)
+                messagebox.showinfo("Éxito", "Producto eliminado correctamente")
+                self.entrada_local_id.delete(0, "end")
+                self.entrada_prod_id.delete(0, "end")
+                self.entrada_prod_id.focus()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo eliminar el producto:\n{e}")
+
+
+# ========== VISTA TENDERO: LISTAR CLIENTES ==========
+
+class TenderoListarClientesView(BaseView):
+    """Vista para listar clientes de una local"""
+    
+    def __init__(self, parent, controller, view_model):
+        super().__init__(parent, controller, view_model)
+        
+        main_frame = ttk.Frame(self, padding=20)
+        main_frame.pack(fill="both", expand=True)
+        
+        title = ttk.Label(main_frame, text="Listar Clientes", font=("Segoe UI", 14, "bold"))
+        title.pack(pady=10)
+        
+        # Frame para entrada de local_id
+        input_frame = ttk.Frame(main_frame)
+        input_frame.pack(pady=10)
+        
+        ttk.Label(input_frame, text="ID del Local:").pack(side="left", padx=5)
+        self.entrada_local_id = ttk.Entry(input_frame, width=20)
+        self.entrada_local_id.pack(side="left", padx=5)
+        self.entrada_local_id.focus()
+        
+        ttk.Button(input_frame, text="Buscar", command=self._cargar_clientes).pack(side="left", padx=5)
+        
+        # Treeview para mostrar clientes
+        columns = ("Cliente ID", "Nombre", "Email", "Deuda")
+        self.tree = ttk.Treeview(main_frame, columns=columns, height=15)
+        self.tree.column("#0", width=0, stretch="no")
+        self.tree.column("Cliente ID", anchor="center", width=100)
+        self.tree.column("Nombre", anchor="w", width=150)
+        self.tree.column("Email", anchor="w", width=150)
+        self.tree.column("Deuda", anchor="center", width=100)
+        
+        self.tree.heading("Cliente ID", text="Cliente ID")
+        self.tree.heading("Nombre", text="Nombre")
+        self.tree.heading("Email", text="Email")
+        self.tree.heading("Deuda", text="Deuda")
+        self.tree.pack(fill="both", expand=True, pady=10)
+        
+        # Botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=10)
+        ttk.Button(btn_frame, text="Atrás", command=lambda: self.controller.go_back()).pack(side="left", padx=5)
+    
+    def _cargar_clientes(self):
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        
+        local_id = self.entrada_local_id.get().strip()
+        if not local_id:
+            messagebox.showerror("Error", "Ingrese un ID de local")
+            return
+        
+        try:
+            clientes = self.vm.listar_clientes(local_id)
+            if clientes:
+                for cliente_id, cliente_data in clientes.items():
+                    nombre = cliente_data.get("nombre", "-")
+                    email = cliente_data.get("email", "-")
+                    deuda = cliente_data.get("deuda", 0)
+                    self.tree.insert("", "end", values=(cliente_id, nombre, email, f"${deuda:.2f}"))
+            else:
+                messagebox.showinfo("Resultado", "No hay clientes registrados")
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudieron cargar los clientes:\n{e}")
+
+
+# ========== VISTA TENDERO: AÑADIR CLIENTE ==========
+
+class TenderoAñadirClienteView(BaseView):
+    """Vista para añadir un nuevo cliente"""
+    
+    def __init__(self, parent, controller, view_model):
+        super().__init__(parent, controller, view_model)
+        
+        main_frame = ttk.Frame(self, padding=20)
+        main_frame.pack(fill="both", expand=True)
+        
+        title = ttk.Label(main_frame, text="Añadir Cliente", font=("Segoe UI", 14, "bold"))
+        title.pack(pady=10)
+        
+        # Formulario
+        form_frame = ttk.Frame(main_frame)
+        form_frame.pack(pady=10)
+        
+        ttk.Label(form_frame, text="ID del Local:").grid(row=0, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_local_id = ttk.Entry(form_frame, width=30)
+        self.entrada_local_id.grid(row=0, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="ID del Cliente:").grid(row=1, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_cliente_id = ttk.Entry(form_frame, width=30)
+        self.entrada_cliente_id.grid(row=1, column=1, padx=10, pady=5)
+        
+        ttk.Label(form_frame, text="Nombre:").grid(row=2, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_nombre = ttk.Entry(form_frame, width=30)
+        self.entrada_nombre.grid(row=2, column=1, padx=10, pady=5)
+        self.entrada_nombre.focus()
+        
+        ttk.Label(form_frame, text="Email:").grid(row=3, column=0, sticky="w", padx=10, pady=5)
+        self.entrada_email = ttk.Entry(form_frame, width=30)
+        self.entrada_email.grid(row=3, column=1, padx=10, pady=5)
+        
+        # Botones
+        btn_frame = ttk.Frame(main_frame)
+        btn_frame.pack(pady=10)
+        ttk.Button(btn_frame, text="Añadir", command=self._submit).pack(side="left", padx=5)
+        ttk.Button(btn_frame, text="Atrás", command=lambda: self.controller.go_back()).pack(side="left", padx=5)
+    
+    def _submit(self):
+        local_id = self.entrada_local_id.get().strip()
+        cliente_id = self.entrada_cliente_id.get().strip()
+        nombre = self.entrada_nombre.get().strip()
+        email = self.entrada_email.get().strip()
+        
+        if not all([local_id, cliente_id, nombre, email]):
+            messagebox.showerror("Error", "Complete todos los campos")
+            return
+        
+        # Verificar si el usuario existe en la base de datos global
+        if not self.vm.usuario_existe_globalmente(cliente_id):
+            messagebox.showerror("Error", f"El usuario '{cliente_id}' no existe en la base de datos")
+            return
+        
+        # Verificar si el cliente ya existe en esta local
+        if self.vm.cliente_existe(local_id, cliente_id):
+            messagebox.showerror("Error", f"El cliente '{cliente_id}' ya existe en esta local")
+            return
+        
+        try:
+            cliente_data = {
+                "nombre": nombre,
+                "email": email,
+                "deuda": 0
+            }
+            self.vm.registrar_cliente(local_id, cliente_id, cliente_data)
+            messagebox.showinfo("Éxito", "Cliente añadido correctamente")
+            self.entrada_local_id.delete(0, "end")
+            self.entrada_cliente_id.delete(0, "end")
+            self.entrada_nombre.delete(0, "end")
+            self.entrada_email.delete(0, "end")
+            self.entrada_nombre.focus()
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo añadir el cliente:\n{e}")
+
+    
 
 
     

@@ -19,9 +19,10 @@ class UseCases:
         productos = self.db.get_productos(local_id)
         if not productos:
             print("No hay productos en este local.")
-            return
+            return {}
         for pid, p in productos.items():
             print(f"[{pid}] {p['nombre']} - ${p['precio']} (Stock: {p['stock']})")
+        return productos
 
     def actualizar_producto(self, local_id, producto_id, nombre=None, precio=None, stock=None):
         data = {}
@@ -43,13 +44,23 @@ class UseCases:
         self.db.add_cliente_a_local(local_id, cliente_id, cliente_data)
         print(f"✅ Cliente añadido al local {local_id}.")
 
+    def cliente_existe(self, local_id, cliente_id):
+        """Verifica si un cliente existe en una local específica"""
+        cliente = self.db.get_cliente(local_id, cliente_id)
+        return cliente is not None
+    
+    def usuario_existe_globalmente(self, user_id):
+        """Verifica si un usuario existe en la base de datos global de usuarios"""
+        return self.db.usuario_existe(user_id)
+
     def listar_clientes(self, local_id):
         clientes = self.db.get_clientes(local_id)
         if not clientes:
             print("No hay clientes en este local.")
-            return
+            return {}
         for cid, c in clientes.items():
             print(f"[{cid}] - {c['nombre']} ({c['email']}) | Deuda: ${c.get('deuda', 0)}")
+        return clientes
 
     def registrar_deuda(self, local_id, cliente_id, monto, plazo_dias=None):
         self.db.registrar_deuda(local_id, cliente_id, monto, plazo_dias)

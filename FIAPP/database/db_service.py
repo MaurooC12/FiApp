@@ -14,6 +14,12 @@ class DBService:
     @key.setter
     def key(self, value):
         self.ref.key = value
+    
+    # --- Validación de usuarios ---
+    def usuario_existe(self, user_id):
+        """Verifica si un usuario existe en la base de datos global de usuarios"""
+        return self.ref.child(f"usuarios/{user_id}").get() is not None
+    
     # --- Productos ---
     def add_producto(self, local_id, producto_data, producto_id):
         # Crear referencia directamente con el ID proporcionado

@@ -70,7 +70,7 @@ class ViewModel:
         self.use_cases.crear_producto(local_id, nombre, precio, stock,producto_id)
 
     def listar_productos(self, local_id):
-        self.use_cases.listar_productos(local_id)
+        return self.use_cases.listar_productos(local_id)
 
     def actualizar_producto(self, local_id, producto_id, nombre=None, precio=None, stock=None):
         self.use_cases.actualizar_producto(local_id, producto_id, nombre, precio, stock)
@@ -82,7 +82,13 @@ class ViewModel:
         self.use_cases.registrar_cliente(local_id, cliente_id, cliente_data)
 
     def listar_clientes(self, local_id):
-        self.use_cases.listar_clientes(local_id)
+        return self.use_cases.listar_clientes(local_id)
+
+    def cliente_existe(self, local_id, cliente_id):
+        return self.use_cases.cliente_existe(local_id, cliente_id)
+    
+    def usuario_existe_globalmente(self, user_id):
+        return self.use_cases.usuario_existe_globalmente(user_id)
 
     def registrar_deuda(self, local_id, cliente_id, monto, plazo_dias=None):
         self.use_cases.registrar_deuda(local_id, cliente_id, monto, plazo_dias)
