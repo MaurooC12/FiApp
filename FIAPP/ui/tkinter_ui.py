@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from datetime import datetime
+import os
 
 
 class App(tk.Tk): # Aplicación principal basado en stacked
@@ -9,9 +10,10 @@ class App(tk.Tk): # Aplicación principal basado en stacked
         super().__init__()
         self.vm = view_model
         
+        
         self.title("FiApp")
         self.geometry("900x650+350+50")
-        #self.iconbitmap("LogoFiApp.ico")
+        self.iconbitmap("LogoFiApp.ico")
         self.resizable(False, False)
         self.configure(bg="#b8d0cc", bd=5)
         self.attributes("-alpha",0.95)
