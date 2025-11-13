@@ -1,6 +1,8 @@
 from domain.producto import Producto
 from database.db_service import DBService
 from domain.local import Local
+from datetime import datetime, timedelta
+import time
 
 
 class UseCases:
@@ -64,6 +66,75 @@ class UseCases:
         # Intentar obtener el nodo de deudas directamente
         detalles = self.db.ref.child(f"locales/{local_id}/clientes/{cliente_id}/deudas").get() or {}
         return detalles
+
+    def obtener_deuda_total_por_cliente(self, cliente_id):
+        """Agrega la deuda numérica (`deuda`) del cliente across todos los locales.
+
+        Retorna un float con la suma total. Si no hay registros, devuelve 0.0
+        """
+        total = 0.0
+        locales = self.db.ref.child("locales").get() or {}
+        for lid, datos_local in locales.items():
+            clientes = datos_local.get("clientes") or {}
+            cliente = clientes.get(cliente_id)
+            if cliente:
+                try:
+                    deuda_val = float(cliente.get("deuda", 0) or 0)
+                except Exception:
+                    deuda_val = 0.0
+                total += deuda_val
+        return total
+
+    def obtener_detalles_deudas_por_local(self, cliente_id):
+        """Devuelve un dict { local_id: deuda_total } para todos los locales donde exista el cliente."""
+        resultados = {}
+        locales = self.db.ref.child("locales").get() or {}
+        for lid, datos_local in locales.items():
+            clientes = datos_local.get("clientes") or {}
+            cliente = clientes.get(cliente_id)
+            if cliente:
+                try:
+                    deuda_val = float(cliente.get("deuda", 0) or 0)
+                except Exception:
+                    deuda_val = 0.0
+                resultados[lid] = deuda_val
+        return resultados
+
+    def obtener_transacciones_cliente(self, cliente_id):
+        """Recolecta todas las entradas de `deudas` para el cliente en todos los locales.
+
+        Retorna una lista de diccionarios: [{"local_id": lid, "timestamp": int, "monto": float, "plazo_dias": int?}, ...]
+        """
+        transacciones = []
+        locales = self.db.ref.child("locales").get() or {}
+        for lid, datos_local in locales.items():
+            clientes = datos_local.get("clientes") or {}
+            cliente = clientes.get(cliente_id)
+            if not cliente:
+                continue
+            deudas = cliente.get("deudas") or {}
+            for ts_key, detalle in (deudas.items() if isinstance(deudas, dict) else []):
+                try:
+                    monto = float(detalle.get("monto", 0))
+                except Exception:
+                    monto = 0.0
+                try:
+                    timestamp = int(detalle.get("timestamp", ts_key))
+                except Exception:
+                    try:
+                        timestamp = int(ts_key)
+                    except Exception:
+                        timestamp = None
+                trans = {"local_id": lid, "timestamp": timestamp, "monto": monto}
+                if "plazo_dias" in detalle:
+                    try:
+                        trans["plazo_dias"] = int(detalle.get("plazo_dias"))
+                    except Exception:
+                        trans["plazo_dias"] = detalle.get("plazo_dias")
+                transacciones.append(trans)
+        # ordenar por timestamp descendente (más reciente primero)
+        transacciones.sort(key=lambda x: x.get("timestamp") or 0, reverse=True)
+        return transacciones
   
     # --- Locales ---
     def crear_local(self, nombre, propietario_id, local_id):
@@ -101,3 +172,110 @@ class UseCases:
             print(f"[{lid}] - {l['nombre']} | Propietario: {l['propietario_id']}")
         return locales
     
+    def obtener_deudas_vigentes_cliente(self, cliente_id):
+        """
+        Retorna todas las deudas vigentes del cliente con estado y color.
+        
+        Estructura: [
+            {
+                "local_id": str,
+                "timestamp": int,
+                "monto": float,
+                "plazo_dias": int,
+                "fecha_creacion": datetime,
+                "fecha_vencimiento": datetime,
+                "dias_restantes": int,
+                "estado": "vigente" | "por_vencer" | "vencido",
+                "color": "verde" | "amarillo" | "naranja" | "rojo",
+                "texto_estado": str (ej: "Vence en 15 días" o "Vencido hace 5 días")
+            },
+            ...
+        ]
+        """
+        deudas = []
+        locales = self.db.ref.child("locales").get() or {}
+        ahora = datetime.now()
+        
+        for lid, datos_local in locales.items():
+            clientes = datos_local.get("clientes") or {}
+            cliente = clientes.get(cliente_id)
+            if not cliente:
+                continue
+            
+            deudas_dict = cliente.get("deudas") or {}
+            for ts_key, detalle in (deudas_dict.items() if isinstance(deudas_dict, dict) else []):
+                try:
+                    monto = float(detalle.get("monto", 0))
+                except Exception:
+                    monto = 0.0
+                
+                try:
+                    timestamp = int(detalle.get("timestamp", ts_key))
+                except Exception:
+                    try:
+                        timestamp = int(ts_key)
+                    except Exception:
+                        continue
+                
+                plazo_dias = None
+                if "plazo_dias" in detalle:
+                    try:
+                        plazo_dias = int(detalle.get("plazo_dias"))
+                    except Exception:
+                        pass
+                
+                # Si no tiene plazo_dias, saltarlo (no se puede calcular estado)
+                if plazo_dias is None:
+                    continue
+                
+                # Calcular fechas
+                fecha_creacion = datetime.fromtimestamp(timestamp)
+                fecha_vencimiento = fecha_creacion + timedelta(days=plazo_dias)
+                dias_restantes = (fecha_vencimiento - ahora).days
+                
+                # Calcular color según proporción de tiempo restante
+                proporcion = dias_restantes / plazo_dias if plazo_dias > 0 else 0
+                
+                if dias_restantes < 0:
+                    # Vencido
+                    color = "rojo"
+                    estado = "vencido"
+                    texto_estado = f"Vencido hace {abs(dias_restantes)} días"
+                elif proporcion >= 0.75:
+                    # Verde: ≥ 3/4 del plazo
+                    color = "verde"
+                    estado = "vigente"
+                    texto_estado = f"Vence en {dias_restantes} días"
+                elif proporcion >= 0.5:
+                    # Amarillo: entre 3/4 y 1/2
+                    color = "amarillo"
+                    estado = "vigente"
+                    texto_estado = f"Vence en {dias_restantes} días"
+                elif proporcion >= 0.125:
+                    # Naranja: entre 1/2 y 1/8
+                    color = "naranja"
+                    estado = "por_vencer"
+                    texto_estado = f"Vence en {dias_restantes} días"
+                else:
+                    # Rojo: < 1/8 del plazo
+                    color = "rojo"
+                    estado = "por_vencer"
+                    texto_estado = f"Vence en {dias_restantes} días"
+                
+                deuda_info = {
+                    "local_id": lid,
+                    "timestamp": timestamp,
+                    "monto": monto,
+                    "plazo_dias": plazo_dias,
+                    "fecha_creacion": fecha_creacion,
+                    "fecha_vencimiento": fecha_vencimiento,
+                    "dias_restantes": dias_restantes,
+                    "estado": estado,
+                    "color": color,
+                    "texto_estado": texto_estado
+                }
+                deudas.append(deuda_info)
+        
+        # Ordenar por fecha de vencimiento (más próximos primero)
+        deudas.sort(key=lambda x: x["fecha_vencimiento"])
+        return deudas

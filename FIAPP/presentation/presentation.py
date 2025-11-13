@@ -109,4 +109,16 @@ class ViewModel:
         Devuelve {} si no hay registros.
         """
         return self.use_cases.obtener_historial_deudas(local_id, cliente_id)
-        
+
+    def obtener_deuda_total_por_cliente(self, cliente_id):
+        return self.use_cases.obtener_deuda_total_por_cliente(cliente_id)
+
+    def obtener_detalles_deudas_por_local(self, cliente_id):
+        return self.use_cases.obtener_detalles_deudas_por_local(cliente_id)
+
+    def obtener_transacciones_cliente(self, cliente_id):
+        return self.use_cases.obtener_transacciones_cliente(cliente_id)
+
+    def obtener_deudas_vigentes_cliente(self, cliente_id):
+        """Retorna lista de deudas vigentes con estado y color."""
+        return self.use_cases.obtener_deudas_vigentes_cliente(cliente_id)
