@@ -28,3 +28,4 @@ class AuthService:
     def delete_user(self, uid):
         auth.delete_user(uid)
         db.reference(f"usuarios/{uid}").delete()
+        return True

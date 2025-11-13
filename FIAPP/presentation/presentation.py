@@ -32,14 +32,37 @@ class ViewModel:
             print("❌ Solo los administradores pueden crear usuarios.")
             chage_user = input("Ingrese su UID de administrador: ")
             self.login(chage_user)
-        self.user_manager.listar_usuarios()
+        users = self.user_manager.listar_usuarios()
+        #print("DEBUG: users =", users, type(users))
+        # Asegurar que siempre devolvemos un iterable (lista) al llamador.
+        if users is None:
+            return []
+
+        # Si la función de bajo nivel devuelve un diccionario {uid: data},
+        # convertimos a una lista de dicts con keys: user_id, email, rol.
+        if isinstance(users, dict):
+            result = []
+            for uid, data in users.items():
+                result.append({
+                    "user_id": uid,
+                    "email": data.get("email"),
+                    "rol": data.get("rol"),
+                })
+            return result
+
+        # Si ya es una lista/iterable de usuarios, devolver como lista.
+        try:
+            return list(users)
+        except Exception:
+            return []
 
     def admin_eliminar_usuario(self, uid):
         while self.current_user["rol"] != "admin":
             print("❌ Solo los administradores pueden crear usuarios.")
             chage_user = input("Ingrese su UID de administrador: ")
             self.login(chage_user)
-        self.user_manager.eliminar_usuario(uid)
+        proof = self.user_manager.eliminar_usuario(uid)
+        return proof
 
     # --- Tendero ---
    #--Productos ---

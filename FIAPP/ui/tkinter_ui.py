@@ -11,7 +11,7 @@ class App(tk.Tk): # Aplicación principal basado en stacked
         
         self.title("FiApp")
         self.geometry("900x650+350+50")
-        self.iconbitmap("LogoFiApp.ico")
+        #self.iconbitmap("LogoFiApp.ico")
         self.resizable(False, False)
         self.configure(bg="#b8d0cc", bd=5)
         self.attributes("-alpha",0.95)
@@ -147,11 +147,160 @@ class AdminView(BaseView):
         button_frame.pack(pady=20)
         
         # Botones del menú
-        ttk.Button(button_frame, text="Crear Usuario", width=30).pack(pady=8)
-        ttk.Button(button_frame, text="Listar Usuarios", width=30).pack(pady=8)
-        ttk.Button(button_frame, text="Eliminar Usuario", width=30).pack(pady=8)
+        ttk.Button(button_frame, text="Crear Usuario", command=lambda:self.create_user(), width=30).pack(pady=8)
+        ttk.Button(button_frame, text="Listar Usuarios", command=lambda: self.list_user(), width=30).pack(pady=8)
+        ttk.Button(button_frame, text="Eliminar Usuario", command=lambda: self.eliminar_user(), width=30).pack(pady=8)
         ttk.Button(button_frame, text="Cambiar de Usuario", command=lambda: controller.show_frame("LoginView"), width=30).pack(pady=8)
         ttk.Button(button_frame, text="Salir", command=controller.quit, width=30).pack(pady=8)
+
+    def create_user(self):
+        """Abrir diálogo para crear un nuevo usuario"""
+        dialog = tk.Toplevel(self)
+        dialog.title("Crear Usuario")
+        dialog.geometry("400x350")
+       
+        dialog.transient(self)
+        dialog.grab_set()
+
+        frm = ttk.Frame(dialog, padding=12)
+        frm.pack(fill="both", expand=True)
+
+        #--Entrada Email--#
+
+        ttk.Label(frm, text="Email:").grid(row=0, column=0, sticky="w", pady=6)
+        entrada_email = ttk.Entry(frm, width=30)
+        entrada_email.grid(row=0, column=1, pady=6)
+
+        #--Entrada Password--#
+
+        ttk.Label(frm, text="Contraseña:").grid(row=1, column=0, sticky="w", pady=6)
+        entrada_password = ttk.Entry(frm, width=30, show="*")
+        entrada_password.grid(row=1, column=1, pady=6)
+        
+        #--Entrada Rol--#
+        ttk.Label(frm, text="Rol (admin/tendero/usuario):").grid(row=2, column=0, sticky="w", pady=6)
+        roles = ["admin", "tendero", "usuario"]
+        
+        entry_rol = ttk.Combobox(frm, values=roles, state="readonly", width=28)
+        entry_rol.grid(row=2, column=1, pady=6)
+        entry_rol.set("usuario")
+    
+        #--Entrada User ID--#
+        ttk.Label(frm, text="User ID:").grid(row=3, column=0, sticky="w", pady=6)
+        entrada_user_id = ttk.Entry(frm, width=30)
+        entrada_user_id.grid(row=3, column=1, pady=6)
+
+        # Botones
+        btn_frame = ttk.Frame(frm)
+        btn_frame.grid(row=4, column=0, columnspan=2, pady=12)
+        
+        def _submit():
+            email = entrada_email.get().strip()
+            password = entrada_password.get().strip()
+            rol = entry_rol.get().strip()
+            user_id = entrada_user_id.get().strip()
+
+            if not email or not password or not rol or not user_id:
+                messagebox.showerror("Error", "Por favor complete todos los campos")
+                return
+            if not rol in roles:
+                messagebox.showerror("Error", "Rol inválido. Use admin, tendero o usuario.")
+                return
+            
+            #--llamada al viewmodel--#
+
+            try:
+                self.vm.admin_crear_usuario(email, password, rol, user_id)
+                messagebox.showinfo("Éxito", "Usuario creado correctamente")
+                dialog.destroy()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo crear el usuario:\n{e}")
+
+            #--botones--#
+        ttk.Button(btn_frame, text="Crear", command=_submit).pack(side="left",padx=8)
+        ttk.Button(btn_frame, text="Cancelar", command=dialog.destroy).pack(side="left", padx=8)
+
+        entrada_email.focus()
+
+    def  list_user(self):
+        """Abrir diálogo para listar usuarios"""
+        dialog = tk.Toplevel(self)
+        dialog.title("Listar Usuarios")
+        dialog.geometry("600x400")
+        
+        dialog.transient(self)
+        dialog.grab_set()
+
+        frm = ttk.Frame(dialog, padding=12)
+        frm.pack(fill="both", expand=True)
+
+        # Treeview para mostrar usuarios
+        columns = ("user_id", "email", "rol")
+        tree = ttk.Treeview(frm, columns=columns, show="headings", height=15)
+        tree.heading("user_id", text="User ID")
+        tree.heading("email", text="Email")
+        tree.heading("rol", text="Rol")
+        tree.pack(fill="both", expand=True)
+        # Scrollbars
+        vsb = ttk.Scrollbar(frm, orient="vertical", command=tree.yview)
+        vsb.pack(side="right", fill="y")
+        tree.configure(yscrollcommand=vsb.set)
+        
+        
+        #--llamada al viewmodel--#
+        view_model = self.vm
+        try:
+            usuarios = view_model.admin_listar_usuarios()
+            for usuario in usuarios:
+                tree.insert("", "end", values=(usuario["user_id"], usuario["email"], usuario["rol"]))
+        except Exception as e:
+            messagebox.showerror("Error", f"No se pudo listar los usuarios:\n{e}")
+            #--botones--#
+        ttk.Button(frm, text="Cerrar", command=dialog.destroy).pack(pady=8)
+
+    def eliminar_user(self):
+        """Abrir diálogo para eliminar un usuario"""
+        dialog = tk.Toplevel(self)
+        dialog.title("Eliminar Usuario")
+        dialog.geometry("400x200")
+        
+        dialog.transient(self)
+        dialog.grab_set()
+
+        frm = ttk.Frame(dialog, padding=12)
+        frm.pack(fill="both", expand=True)
+
+        ttk.Label(frm, text="Ingrese el User ID del usuario a eliminar:").pack(pady=6)
+        entrada_user_id = ttk.Entry(frm, width=30)
+        entrada_user_id.pack(pady=6)
+        entrada_user_id.focus()
+
+        def _submit():
+            user_id = entrada_user_id.get().strip()
+
+            if not user_id:
+                messagebox.showerror("Error", "Por favor ingrese un User ID")
+                return
+            
+            #--llamada al viewmodel--#
+            try:
+                elim = self.vm.admin_eliminar_usuario(user_id)
+                if elim == True:
+                    messagebox.showinfo("Éxito", "Usuario eliminado correctamente")
+                else:
+                    messagebox.showwarning("Aviso", "No se pudo eliminar el usuario")
+                dialog.destroy()
+            except Exception as e:
+                messagebox.showerror("Error", f"No se pudo eliminar el usuario:\n{e}")
+
+        #--botones--#
+        btn_frame = ttk.Frame(frm,)
+        btn_frame.pack(pady=8)
+
+        ttk.Button(btn_frame, text="Eliminar", command=_submit).pack(side="left", padx=8)
+        ttk.Button(btn_frame, text="Cancelar", command=dialog.destroy).pack(side="left", padx=8)
+
+
 
 
 # ========== VISTA DE TENDERO ==========

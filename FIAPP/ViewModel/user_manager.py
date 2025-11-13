@@ -22,11 +22,13 @@ class Administrador:
             print(f"❌ Error listando usuarios: {e}")
             if not usuarios:
                 print("No hay usuarios registrados.")
-        return
+        return usuarios
        
     def eliminar_usuario(self, uid):
         try:
             self.auth.delete_user(uid)
             print(f"🗑️ Usuario {uid} eliminado correctamente.")
+            return True
         except Exception as e:
             print(f"❌ Error eliminando usuario: {e}")
+            return False
