@@ -13,9 +13,12 @@ class AuthService:
         ref = self.ref.child(f"usuarios/{user_id}")
         ref.set({
             "email": email,
-            "rol": role
+            "rol": role,
+            "user_id": user_id  # Guarda el ID personalizado como dato adicional
         })
-        return user_id
+        alias_ref = self.ref.child(f"usuarios/{user_id}/alias")
+        alias_ref.set(user.uid)
+        return user_id  # NO Retorna el UID real de Firebase
 
     def get_user_role(self, uid):
         ref = db.reference(f"usuarios/{uid}/rol")
@@ -25,7 +28,33 @@ class AuthService:
         ref = db.reference("usuarios")
         return ref.get() or {}
 
-    def delete_user(self, uid):
-        auth.delete_user(uid)
-        db.reference(f"usuarios/{uid}").delete()
-        return True
+    def delete_user(self, custom_id):
+        alias_ref = self.ref.child(f"usuarios/{custom_id}/alias")
+        uid = alias_ref.get()
+        if not uid:
+            print("⚠️ No se encontró usuario con ese ID personalizado.")
+            return False
+        
+        try:
+            auth.delete_user(uid)
+            print("🗑️ Usuario eliminado de Firebase Auth.")
+        except Exception as e:
+            print(f"⚠️ Usuario no eliminado en Firebase Auth: {e}")
+            return False
+        
+        try:
+            user_ref = self.ref.child(f"usuarios/{custom_id}")
+            user_ref.delete()
+            print("🗑️ Datos del usuario eliminados de Firebase DB.")
+        
+        except Exception as e:
+            print(f"⚠️ Datos del usuario no eliminados de Firebase DB: {e}")
+            return False
+        
+        try:
+            alias_ref.delete()
+            print("🗑️ Alias eliminado de Firebase DB.")
+            return True
+        except Exception as e:
+            print(f"⚠️ Alias no eliminado en Firebase DB: {e}")
+            return False
