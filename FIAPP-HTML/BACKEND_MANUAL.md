@@ -188,9 +188,4 @@ gunicorn -w 3 -b 127.0.0.1:8000 app.main:app
 
 ---
 
-Si quieres, puedo:
-- Añadir este manual también dentro del `README.md` o vincularlo.
-- Generar ejemplos `curl` y tests unitarios para endpoints específicos.
-- Implementar formularios faltantes (crear producto, registrar abono) y APIs JSON REST.
-
 Fin del Manual — FIAPP Backend
