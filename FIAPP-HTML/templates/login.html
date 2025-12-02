@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="max-width: 500px; margin: 3rem auto;">
+    <div class="card">
+      <h2 style="text-align: center;">🔐 Iniciar sesión</h2>
+      {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+      <form method="post">
+        <label for="email">
+          📧 Email
+          <input type="email" id="email" name="email" required placeholder="tu@email.com">
+        </label>
+        <label for="password">
+          🔑 Contraseña
+          <input type="password" id="password" name="password" required placeholder="Tu contraseña">
+        </label>
+        <button type="submit" style="width: 100%; margin-top: 1rem;">Entrar</button>
+      </form>
+      <p style="text-align: center; margin-top: 1rem; color: #666;">
+        ¿No tienes cuenta? <a href="{{ url_for('register') }}" style="color: var(--accent); text-decoration: none; font-weight: 600;">Regístrate aquí</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="padding: 2rem; max-width: 600px; margin: 0 auto;">
+    <h1>➕ Crear Nueva Tienda</h1>
+    
+    {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+    
+    <div class="card">
+      <form method="post">
+        <label for="nombre">
+          Nombre de la tienda
+          <input type="text" id="nombre" name="nombre" required placeholder="Mi tienda principal" style="width: 100%;">
+        </label>
+        
+        <button type="submit" style="width: 100%; margin-top: 1rem; padding: 0.75rem;">✅ Crear Tienda</button>
+      </form>
+    </div>
+    
+    <div style="text-align: center; margin-top: 1rem;">
+      <a href="{{ url_for('tendero_locales') }}" style="color: var(--accent); text-decoration: none;">← Volver a mis tiendas</a>
+    </div>
+  </div>
+{% endblock %}

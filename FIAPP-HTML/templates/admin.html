@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card">
+    <h2>👨‍💼 Panel de administrador</h2>
+    <p>Gestiona usuarios y administra la plataforma desde aquí.</p>
+    <div class="menu">
+      <a href="{{ url_for('admin_users') }}" class="menu-item">
+        <strong>👥 Listar usuarios</strong>
+        <span style="font-size: 0.9rem; color: #999;">Ver todos los usuarios registrados</span>
+      </a>
+      <a href="{{ url_for('admin_create_user') }}" class="menu-item">
+        <strong>➕ Crear usuario</strong>
+        <span style="font-size: 0.9rem; color: #999;">Agregar un nuevo usuario al sistema</span>
+      </a>
+    </div>
+  </div>
+{% endblock %}

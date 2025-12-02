@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+      <h2>➕ Crear nuevo producto</h2>
+      <p style="color: #666; margin-bottom: 1.5rem;">Local: <strong>{{ local_id }}</strong></p>
+      {% if result %}
+        {% if result.error %}
+          <div class="alert alert-error">❌ Error: {{ result.error }}</div>
+        {% else %}
+          <div class="alert alert-success">✅ Producto creado exitosamente: {{ result.producto_id }}</div>
+        {% endif %}
+      {% endif %}
+      <form method="post">
+        <label for="producto_id">
+          🆔 ID del producto
+          <input type="text" id="producto_id" name="producto_id" required placeholder="ej. PROD001">
+        </label>
+        <label for="nombre">
+          📝 Nombre del producto
+          <input type="text" id="nombre" name="nombre" required placeholder="ej. Pan Blanco">
+        </label>
+        <label for="precio">
+          💰 Precio
+          <input type="number" id="precio" name="precio" required step="0.01" placeholder="ej. 1200.00">
+        </label>
+        <label for="stock">
+          📦 Stock
+          <input type="number" id="stock" name="stock" required placeholder="ej. 50">
+        </label>
+        <button type="submit" style="width: 100%;">✅ Crear producto</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

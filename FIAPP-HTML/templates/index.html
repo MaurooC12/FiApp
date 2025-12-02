@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card text-center">
+    <h2>🎉 Bienvenido a FIAPP</h2>
+    {% if message %}
+      <div class="alert alert-info mt-2">{{ message }}</div>
+    {% endif %}
+    <p style="font-size: 1.1rem; color: #666; margin: 1.5rem 0;">De la libreta al clic: tus finanzas en la palma de tu mano</p>
+    {% if not session.user %}
+      <div class="flex-row" style="justify-content: center; gap: 1rem;">
+        <a href="{{ url_for('login') }}" class="btn">🔐 Iniciar sesión</a>
+        <a href="{{ url_for('register') }}" class="btn" style="background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);">✨ Crear cuenta</a>
+      </div>
+    {% else %}
+      <div class="menu">
+        {% if session.role == 'admin' %}
+          <a href="{{ url_for('admin_users') }}" class="menu-item">
+            <strong>👥 Gestionar usuarios</strong>
+            <span style="font-size: 0.9rem; color: #999;">Panel administrativo</span>
+          </a>
+        {% endif %}
+        {% if session.role == 'tendero' %}
+          <a href="{{ url_for('listar_locales') }}" class="menu-item">
+            <strong>🏪 Mis Locales</strong>
+            <span style="font-size: 0.9rem; color: #999;">Gestiona tus negocios</span>
+          </a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="menu-item" style="background: rgba(214, 40, 40, 0.05); border-color: rgba(214, 40, 40, 0.2);">
+          <strong style="color: var(--danger);">🚪 Salir</strong>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

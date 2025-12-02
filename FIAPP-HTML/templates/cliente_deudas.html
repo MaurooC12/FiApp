@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="padding: 2rem;">
+    <h1>💳 Mis Deudas</h1>
+    <p style="color: #666;">Tiendas donde tienes deudas pendientes</p>
+    
+    {% if deudas %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+        {% for local_id, deuda_info in deudas.items() %}
+          <div class="card">
+            <h3>{{ deuda_info.get('nombre_local', local_id) }}</h3>
+            
+            <div style="background-color: #f3f3f3; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+              <p style="margin: 0; font-size: 0.9rem; color: #666;">Monto Adeudado</p>
+              <h4 style="margin: 0.5rem 0 0 0; font-size: 1.8rem; color: #d9534f;">
+                ${{ deuda_info.get('deuda_total', 0) }}
+              </h4>
+            </div>
+            
+            <button style="
+              width: 100%;
+              padding: 0.75rem;
+              background-color: #5cb85c;
+              color: white;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              font-weight: 600;
+            " onclick="alert('Sistema de pagos en desarrollo')">💳 Realizar Pago</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2rem; color: #666;">
+        <p>🎉 ¡No tienes deudas! Tu cuenta está al día.</p>
+      </div>
+    {% endif %}
+    
+    <hr style="margin: 2rem 0;">
+    <div style="text-align: center;">
+      <a href="{{ url_for('dashboard') }}" style="color: var(--accent); text-decoration: none;">← Volver al Panel</a>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="padding: 2rem;">
+    <h1>📦 Inventario</h1>
+    <p style="color: #666;">Tienda: <strong>{{ local_id }}</strong></p>
+    
+    <a href="{{ url_for('tendero_locales') }}" style="
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--accent);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    ">➕ Agregar Producto</a>
+    
+    {% if productos %}
+      <table style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+        <thead style="background-color: #f5f5f5;">
+          <tr>
+            <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #ddd;">Producto</th>
+            <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #ddd;">Precio</th>
+            <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #ddd;">Stock</th>
+            <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #ddd;">Proveedor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for producto_id, producto_data in productos.items() %}
+            <tr style="border-bottom: 1px solid #eee;">
+              <td style="padding: 1rem;">{{ producto_data.get('nombre', 'Sin nombre') }}</td>
+              <td style="padding: 1rem;">{{ producto_data.get('precio', 0) }}</td>
+              <td style="padding: 1rem;">{{ producto_data.get('stock', 0) }}</td>
+              <td style="padding: 1rem;">
+                <small style="color: #666;">No asignado</small>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div style="text-align: center; padding: 2rem; color: #666;">
+        <p>No hay productos. <a href="{{ url_for('tendero_locales') }}" style="color: var(--accent); text-decoration: none; font-weight: 600;">Agrega uno</a></p>
+      </div>
+    {% endif %}
+    
+    <hr style="margin: 2rem 0;">
+    <div style="text-align: center;">
+      <a href="{{ url_for('tendero_locales') }}" style="color: var(--accent); text-decoration: none;">← Volver a mis tiendas</a>
+    </div>
+  </div>
+{% endblock %}

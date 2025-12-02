@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card">
+    <h2>🏪 Panel del Tendero</h2>
+    <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">Gestiona tus locales, productos, clientes y deudas desde aquí.</p>
+    <div class="menu">
+      <a href="{{ url_for('listar_locales') }}" class="menu-item">
+        <strong>🏪 Mis Locales</strong>
+        <span style="font-size: 0.9rem; color: #999;">Ver y gestionar todos tus locales</span>
+      </a>
+      <div class="menu-item" style="pointer-events: none; opacity: 0.7;">
+        <strong>📦 Productos</strong>
+        <span style="font-size: 0.9rem; color: #999;">Disponible desde Locales</span>
+      </div>
+      <div class="menu-item" style="pointer-events: none; opacity: 0.7;">
+        <strong>👥 Clientes</strong>
+        <span style="font-size: 0.9rem; color: #999;">Gestiona tus clientes</span>
+      </div>
+      <div class="menu-item" style="pointer-events: none; opacity: 0.7;">
+        <strong>💰 Deudas</strong>
+        <span style="font-size: 0.9rem; color: #999;">Registra y controla deudas</span>
+      </div>
+    </div>
+  </div>
+{% endblock %}

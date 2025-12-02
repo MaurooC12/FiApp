@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="padding: 2rem;">
+    <h1>👥 Clientes y Deudas</h1>
+    <p style="color: #666;">Tienda: <strong>{{ local_id }}</strong></p>
+    
+    {% if clientes %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+        {% for cliente_id, cliente_data in clientes.items() %}
+          <div class="card">
+            <h3>{{ cliente_data.get('nombre', cliente_id) }}</h3>
+            <p style="color: #666; margin-bottom: 1rem;">
+              <strong>Email:</strong> {{ cliente_data.get('email', 'N/A') }}
+            </p>
+            
+            <div style="background-color: #fff3cd; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
+              <p style="margin: 0; font-size: 0.9rem; color: #666;">Deuda Total</p>
+              <h4 style="margin: 0.5rem 0 0 0; font-size: 1.5rem; color: #d9534f;">
+                ${{ cliente_data.get('deuda', 0) }}
+              </h4>
+            </div>
+            
+            <button style="
+              width: 100%;
+              padding: 0.75rem;
+              background-color: #5cb85c;
+              color: white;
+              border: none;
+              border-radius: 5px;
+              cursor: pointer;
+              font-weight: 600;
+            " onclick="alert('Formulario de abono próximamente')">💰 Registrar Abono</button>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2rem; color: #666;">
+        <p>No hay clientes registrados en esta tienda.</p>
+      </div>
+    {% endif %}
+    
+    <hr style="margin: 2rem 0;">
+    <div style="text-align: center;">
+      <a href="{{ url_for('tendero_locales') }}" style="color: var(--accent); text-decoration: none;">← Volver a mis tiendas</a>
+    </div>
+  </div>
+{% endblock %}

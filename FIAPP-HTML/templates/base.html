@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FIAPP - Finanzas en la palma de tu mano</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <header>
+      <h1>🚀 FIAPP</h1>
+      <nav>
+        <a href="{{ url_for('index') }}">Inicio</a>
+        {% if session.role == 'admin' %}
+          <a href="{{ url_for('admin_users') }}">👥 Usuarios</a>
+          <a href="{{ url_for('admin_create_user') }}">➕ Crear usuario</a>
+        {% endif %}
+        {% if session.role == 'tendero' %}
+          <a href="{{ url_for('listar_locales') }}">🏪 Locales</a>
+        {% endif %}
+        {% if session.user %}
+          <span>👤 {{ session.user }} ({{ session.role }})</span>
+          <a href="{{ url_for('logout') }}">🚪 Salir</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">🔐 Iniciar sesión</a>
+        {% endif %}
+      </nav>
+    </header>
+
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+      <p>&copy; 2025 FIAPP - De la libreta al clic: tus finanzas en la palma de tu mano</p>
+    </footer>
+
+    <!-- Temporarily disable client JS to test form submissions -->
+    <!-- <script src="{{ url_for('static', filename='script.js') }}"></script> -->
+  </body>
+</html>
