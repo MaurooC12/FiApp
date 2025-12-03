@@ -1,40 +1,35 @@
-# FiApp
-> **"De la libreta al clic: tus finanzas en la palma de tu mano."**
 
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
-![Firebase](https://img.shields.io/badge/Firebase-Realtime%20DB-orange)
-![AI](https://img.shields.io/badge/AI-Chatbot-purple)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
+## 🚀 Objetivo del Proyecto
+> “De la libreta al clic: tus finanzas en la palma de tu mano .”
 
-## El Problema: Fin de la Libreta
-FiApp nace para modernizar a las pequeñas tiendas de barrio que aún llevan su contabilidad y el registro de deudas ("fiados") en cuadernos físicos. 
-
-Sabemos que el cuaderno se pierde, se moja o se confunden las cuentas. FiApp digitaliza esa confianza entre vecino y tendero, ofreciendo un respaldo seguro donde:
-1.  El tendero sabe exactamente quién le debe y cuánto.
-2.  El cliente tiene transparencia sobre sus compras.
-
-## Funcionalidades Clave
-
-### Para el Tendero
-* **Gestión de Inventario Visual:** Carga de productos con imágenes para fácil reconocimiento.
-* **Control de Fiados:** Registro de deudas y abonos con fecha exacta.
-* **Chatbot Inteligente:** Un asistente IA integrado que guía al tendero y le ayuda con cálculos matemáticos y financieros en tiempo real.
-* **Gestión de Tiendas:** Administración de múltiples locales desde una cuenta.
-
-### Para el Cliente
-* **Historial de Compras:** Consulta detallada de lo que se ha fiado.
-* **Seguimiento de Deuda:** Visualización del saldo pendiente total.
-
-## Tecnologías
-Este proyecto integra **Python (Flask)** para el backend, **Firebase Realtime Database** para la persistencia de datos en tiempo real y **Groq API** para la inteligencia artificial.
-
-
-## 🎓 Autores
-
-* **Santiago López Murcia**
-* **Andrés Mauricio Cepeda Villanueva**
-* **José Luis Cancelado Castro**
-* **Juan Diego Cuartas Casas**
+Facilitar la administración de tiendas locales mediante una plataforma intuitiva que permita:
+- Registrar y actualizar productos del inventario.
+- Gestionar ventas al contado o fiadas.
+- Llevar control de deudas, pagos y plazos.
+- Enviar notificaciones automáticas a los clientes.
 
 ---
-© 2025 FiApp Team. Licencia MIT.
+
+## 🧠 Descripción General
+
+FiApp busca digitalizar el proceso tradicional del “fiado” en tiendas de barrio, ofreciendo herramientas sencillas tanto para vendedores como para clientes.
+
+- **Vendedor:** puede crear su tienda, elegir una plantilla de diseño, registrar su inventario, gestionar ventas, controlar deudas y asignar plazos de pago.
+- **Cliente:** puede buscar tiendas, marcarlas como favoritas, revisar su historial de fiados y recibir notificaciones sobre nuevos movimientos o recordatorios de pago.
+
+---
+
+## 👥 Autores
+
+- Santiago López Murcia  
+- Mauricio Cepeda Villanueva  
+- Juan Cuartas Casas  
+- José Luis Cancelado  
+
+---
+
+## 📜 Licencia
+
+Este proyecto está bajo la licencia **MIT**. Consulta el archivo [`LICENSE`](LICENSE) para más información.
+
+

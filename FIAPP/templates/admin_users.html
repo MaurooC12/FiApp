@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card">
+    <h2>👥 Usuarios registrados</h2>
+    {% if users %}
+      <table>
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Email</th>
+            <th>Rol</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for uid, data in users.items() %}
+            <tr>
+              <td><strong>{{ uid }}</strong></td>
+              <td>{{ data.email }}</td>
+              <td><span style="background: rgba(0, 180, 216, 0.2); padding: 0.4rem 0.8rem; border-radius: 6px;">{{ data.rol }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info">No hay usuarios registrados.</div>
+    {% endif %}
+  </div>
+{% endblock %}

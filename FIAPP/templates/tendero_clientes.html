@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="padding: 2rem;">
+    <h1>👥 Clientes y Deudas</h1>
+    <p style="color: #666;">Tienda: <strong>{{ local_name }}</strong></p>
+    
+    <a href="{{ url_for('tendero_agregar_cliente', local_id=local_id) }}" style="
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--accent);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    ">➕ Agregar Cliente</a>
+    
+    {% if clientes %}
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+        {% for cliente_id, cliente_data in clientes.items() %}
+          <div class="card">
+            <h3>{{ cliente_data.get('nombre', cliente_id) }}</h3>
+            <p style="color: #666; margin-bottom: 1.5rem;">
+              <strong>Email:</strong> {{ cliente_data.get('email', 'N/A') }}
+            </p>
+            
+            <div style="background-color: #fff3cd; padding: 1rem; border-radius: 5px; margin-bottom: 1.5rem;">
+              <p style="margin: 0; font-size: 0.9rem; color: #666;">Deuda Total</p>
+              <h4 style="margin: 0.5rem 0 0 0; font-size: 2rem; color: #d9534f;">
+                ${{ "{:.2f}".format(cliente_data.get('deuda', 0)) }}
+              </h4>
+            </div>
+            
+            <!-- PANEL 1: ABONO (restar deuda) -->
+            <div style="background-color: #e8f5e9; padding: 1rem; border-radius: 5px; border-left: 4px solid #4caf50; margin-bottom: 0.75rem;">
+              <h5 style="margin-top: 0; color: #4caf50; font-size: 0.95rem;">💚 Registrar Abono (Restar)</h5>
+              <form method="POST" action="{{ url_for('tendero_registrar_abono', local_id=local_id, cliente_id=cliente_id) }}" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                <div style="flex: 1;">
+                  <input 
+                    type="number" 
+                    name="monto_pago" 
+                    required 
+                    min="0.01" 
+                    step="0.01"
+                    placeholder="Monto"
+                    style="
+                      width: 100%;
+                      padding: 0.5rem;
+                      border: 1px solid #81c784;
+                      border-radius: 3px;
+                      font-size: 0.85rem;
+                      box-sizing: border-box;
+                    "
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  style="
+                    padding: 0.5rem 0.75rem;
+                    background-color: #4caf50;
+                    color: white;
+                    border: none;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                  "
+                >
+                  Pagar
+                </button>
+              </form>
+            </div>
+
+            <!-- PANEL 2: SUMAR DEUDA (aumentar) -->
+            <div style="background-color: #fff3e0; padding: 1rem; border-radius: 5px; border-left: 4px solid #ff9800; margin-bottom: 0.75rem;">
+              <h5 style="margin-top: 0; color: #ff9800; font-size: 0.95rem;">🟠 Sumar Deuda (Aumentar)</h5>
+              <form method="POST" action="{{ url_for('tendero_sumar_deuda', local_id=local_id, cliente_id=cliente_id) }}" style="display: flex; gap: 0.5rem; align-items: flex-end;">
+                <div style="flex: 1;">
+                  <input 
+                    type="number" 
+                    name="monto_sumar" 
+                    required 
+                    min="0.01" 
+                    step="0.01"
+                    placeholder="Monto"
+                    style="
+                      width: 100%;
+                      padding: 0.5rem;
+                      border: 1px solid #ffb74d;
+                      border-radius: 3px;
+                      font-size: 0.85rem;
+                      box-sizing: border-box;
+                    "
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  style="
+                    padding: 0.5rem 0.75rem;
+                    background-color: #ff9800;
+                    color: white;
+                    border: none;
+                    border-radius: 3px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 0.8rem;
+                  "
+                >
+                  Sumar
+                </button>
+              </form>
+            </div>
+
+            <!-- PANEL 3: CANCELAR (poner en 0) -->
+            <div style="margin-bottom: 0.75rem;">
+              <form method="POST" action="{{ url_for('tendero_cancelar_deuda', local_id=local_id, cliente_id=cliente_id) }}" onsubmit="return confirm('¿Cancelar completamente la deuda?')">
+                <button 
+                  type="submit" 
+                  style="
+                    width: 100%;
+                    padding: 0.5rem;
+                    background-color: #2196f3;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                  "
+                >
+                  💙 Cancelar Deuda (Poner en 0)
+                </button>
+              </form>
+            </div>
+
+            <!-- PANEL 4: ELIMINAR CLIENTE (borrar) -->
+            <div>
+              <form method="POST" action="{{ url_for('tendero_eliminar_cliente', local_id=local_id, cliente_id=cliente_id) }}" onsubmit="return confirm('⚠️ ¿Eliminar completamente este cliente? No se puede deshacer.')">
+                <button 
+                  type="submit" 
+                  style="
+                    width: 100%;
+                    padding: 0.5rem;
+                    background-color: #f44336;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                  "
+                >
+                  🗑️ Eliminar Cliente
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 2rem; color: #666;">
+        <p>No hay clientes registrados en esta tienda.</p>
+        <a href="{{ url_for('tendero_agregar_cliente', local_id=local_id) }}" style="color: var(--accent); text-decoration: none; font-weight: 600;">Agrega el primero →</a>
+      </div>
+    {% endif %}
+    
+    <hr style="margin: 2rem 0;">
+    <div style="text-align: center;">
+      <a href="{{ url_for('tendero_locales') }}" style="color: var(--accent); text-decoration: none;">← Volver a mis tiendas</a>
+    </div>
+  </div>
+{% endblock %}
