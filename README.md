@@ -26,7 +26,7 @@ Sabemos que el cuaderno se pierde, se moja o se confunden las cuentas. FiApp dig
 
 En esta carpeta principal encontrarás:
 
-* **`FiApp Backend.pdf`**: **Manual Oficial de Usuario y Técnico.** [Clic aquí para leerlo](./FiApp20Backend.pdf).
+* **`FiApp Backend.pdf`**: **Manual Oficial de Usuario y Técnico.** [Clic aquí para leerlo](./FiApp%Backend.pdf).
 * **`FIAPP/`**: Carpeta que contiene todo el código fuente del proyecto.
 * **`Video FiApp`**: Vídeo explicativo de la aplicación
 
