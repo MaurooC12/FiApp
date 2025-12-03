@@ -14,33 +14,35 @@ Sabemos que el cuaderno se pierde, se moja o se confunden las cuentas. FiApp dig
 2.  El cliente tiene transparencia sobre sus compras.
 
 ## Funcionalidades Clave
+* **Gestión de Inventario Visual:** Carga de productos con imágenes.
+* **Control de Fiados:** Registro de deudas y abonos.
+* **Chatbot Inteligente:** Asistente IA para cálculos financieros.
+* **Gestión de Tiendas:** Administración de múltiples locales.
 
-### Para el Tendero
-* **Gestión de Inventario Visual:** Carga de productos con imágenes para fácil reconocimiento.
-* **Control de Fiados:** Registro de deudas y abonos con fecha exacta.
-* **Chatbot Inteligente:** Un asistente IA integrado que guía al tendero y le ayuda con cálculos matemáticos y financieros en tiempo real.
-* **Gestión de Tiendas:** Administración de múltiples locales desde una cuenta.
+## Contenido del Repositorio
 
-### Para el Cliente
-* **Historial de Compras:** Consulta detallada de lo que se ha fiado.
-* **Seguimiento de Deuda:** Visualización del saldo pendiente total.
+En esta carpeta principal encontrarás:
 
-## Tecnologías
-Este proyecto integra **Python (Flask)** para el backend, **Firebase Realtime Database** para la persistencia de datos en tiempo real y **Groq API** para la inteligencia artificial.
+* **`FiApp Backend.pdf`**: **Manual Oficial de Usuario y Técnico.** [Clic aquí para leerlo](./FiApp%20Backend.pdf).
+* **`FIAPP/`**: Carpeta que contiene todo el código fuente del proyecto.
+* **`LogoFiApp.ico`**: Icono oficial de la aplicación.
 
-## Instalación y Manual Técnico
-Para ver las instrucciones detalladas de instalación, configuración de variables de entorno y despliegue del servidor, por favor consulta el manual oficial adjunto en este repositorio:
+---
 
- **[📄 Leer Manual del Backend (PDF)](./FiApp%20Backend.pdf)**
+## ¿Cómo correr el proyecto?
+
+Para ver las instrucciones de instalación, configuración de variables de entorno y ejecución del servidor, por favor dirígete a la carpeta del código fuente o lee el manual adjunto.
+
+**[Ir a la documentación del Código Fuente (Carpeta FIAPP)](./FIAPP/README.md)**
 
 ---
 
 ## Autores
 
-* **Santiago López Murcia**
-* **Andrés Mauricio Cepeda Villanueva**
-* **José Luis Cancelado Castro**
-* **Juan Diego Cuartas Casas**
+* Santiago López Murcia
+* Andrés Mauricio Cepeda Villanueva
+* José Luis Cancelado Castro
+* Juan Diego Cuartas Casas
 
 ---
 © 2025 FiApp Team. Licencia MIT.
