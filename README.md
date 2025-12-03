@@ -28,8 +28,14 @@ Sabemos que el cuaderno se pierde, se moja o se confunden las cuentas. FiApp dig
 ## Tecnologías
 Este proyecto integra **Python (Flask)** para el backend, **Firebase Realtime Database** para la persistencia de datos en tiempo real y **Groq API** para la inteligencia artificial.
 
+## Instalación y Manual Técnico
+Para ver las instrucciones detalladas de instalación, configuración de variables de entorno y despliegue del servidor, por favor consulta el manual oficial adjunto en este repositorio:
 
-## 🎓 Autores
+ **[📄 Leer Manual del Backend (PDF)](./FiApp%20Backend.pdf)**
+
+---
+
+## Autores
 
 * **Santiago López Murcia**
 * **Andrés Mauricio Cepeda Villanueva**
@@ -38,4 +44,3 @@ Este proyecto integra **Python (Flask)** para el backend, **Firebase Realtime Da
 
 ---
 © 2025 FiApp Team. Licencia MIT.
-
