@@ -1,6 +1,9 @@
 # FiApp
 > **"De la libreta al clic: tus finanzas en la palma de tu mano."**
 
+
+> Grupo 8
+
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![Firebase](https://img.shields.io/badge/Firebase-Realtime%20DB-orange)
 ![AI](https://img.shields.io/badge/AI-Chatbot-purple)
