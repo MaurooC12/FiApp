@@ -28,7 +28,7 @@ En esta carpeta principal encontrarás:
 
 * **`FiAppBackend.pdf`**: **Manual Oficial de Usuario y Técnico.** [Clic aquí para leerlo](./FiAppBackend.pdf).
 * **`FIAPP/`**: Carpeta que contiene todo el código fuente del proyecto.
-* **`Video FiApp`**: Vídeo explicativo de la aplicación. [Clic aquí para verlo](./Video%20FiApp.md).
+* **`Video FiApp`**: Vídeo explicativo de la aplicación. [Clic aquí para verlo](./VideoFiApp.md).
 
 ---
 
