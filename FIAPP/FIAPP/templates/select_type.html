@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="max-width: 600px; margin: 3rem auto;">
+    <div class="card">
+      <h2 style="text-align: center;">🎯 ¿Cuál es tu rol?</h2>
+      <p style="text-align: center; color: #666; margin: 1rem 0;">
+        Selecciona cómo quieres usar FIAPP
+      </p>
+      
+      {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+      {% endif %}
+      
+      <form method="post" style="display: grid; gap: 1rem;">
+        <label style="display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding: 1.5rem; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; align-items: center;">
+          <input type="radio" name="tipo_usuario" value="tendero" required style="width: 20px; height: 20px; cursor: pointer;">
+          <div>
+            <strong style="display: block;">🏪 Tendero</strong>
+            <small style="color: #666;">Gestiona tus tiendas, inventario, productos, clientes y deudas</small>
+          </div>
+        </label>
+        
+        <label style="display: grid; grid-template-columns: auto 1fr; gap: 1rem; padding: 1.5rem; border: 2px solid var(--border); border-radius: 8px; cursor: pointer; align-items: center;">
+          <input type="radio" name="tipo_usuario" value="cliente" required style="width: 20px; height: 20px; cursor: pointer;">
+          <div>
+            <strong style="display: block;">👤 Cliente</strong>
+            <small style="color: #666;">Ve las tiendas donde tienes deudas y gestiona tus pagos</small>
+          </div>
+        </label>
+        
+        <button type="submit" style="width: 100%; margin-top: 1rem; padding: 0.75rem;">✅ Continuar</button>
+      </form>
+      
+      <p style="text-align: center; margin-top: 1rem; color: #666;">
+        <a href="{{ url_for('logout') }}" style="color: var(--accent); text-decoration: none;">Cambiar cuenta</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

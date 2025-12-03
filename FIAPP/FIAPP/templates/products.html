@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <h2 style="margin: 0;">📦 Productos - {{ local_id }}</h2>
+      <a href="{{ url_for('create_producto', local_id=local_id) }}" class="btn">➕ Crear producto</a>
+    </div>
+    {% if productos %}
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <th>Stock</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pid, p in productos.items() %}
+            <tr>
+              <td><strong>{{ pid }}</strong></td>
+              <td>{{ p.nombre }}</td>
+              <td style="text-align: right;"><strong>${{ "%.2f"|format(p.precio|float) }}</strong></td>
+              <td style="text-align: center;"><span style="background: rgba(6, 167, 125, 0.2); padding: 0.4rem 0.8rem; border-radius: 6px;">{{ p.stock }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <div class="alert alert-info">📋 No hay productos en este local.</div>
+    {% endif %}
+  </div>
+{% endblock %}

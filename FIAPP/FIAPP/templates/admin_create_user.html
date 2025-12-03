@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+      <h2>➕ Crear nuevo usuario</h2>
+      {% if result %}
+        {% if result.error %}
+          <div class="alert alert-error">❌ Error: {{ result.error }}</div>
+        {% else %}
+          <div class="alert alert-success">✅ Usuario creado exitosamente: {{ result.user_id }}</div>
+        {% endif %}
+      {% endif %}
+
+      <form method="post">
+        <label for="email">
+          📧 Email
+          <input type="email" id="email" name="email" required placeholder="usuario@ejemplo.com">
+        </label>
+        <label for="password">
+          🔑 Contraseña
+          <input type="password" id="password" name="password" required placeholder="Contraseña segura">
+        </label>
+        <label for="role">
+          👤 Rol
+          <select id="role" name="role" required>
+            <option value="">Selecciona un rol</option>
+            <option value="admin">Admin</option>
+            <option value="tendero">Tendero</option>
+            <option value="cliente">Cliente</option>
+          </select>
+        </label>
+        <label for="user_id">
+          🆔 UID (user_id)
+          <input type="text" id="user_id" name="user_id" required placeholder="ID único del usuario">
+        </label>
+        <button type="submit" style="width: 100%;">✅ Crear usuario</button>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="card">
+    <h2>🏪 Locales</h2>
+    {% if locales %}
+      <div class="grid">
+        {% for lid, l in locales.items() %}
+          <div style="background: linear-gradient(135deg, rgba(0, 180, 216, 0.05), rgba(0, 180, 216, 0.02)); border: 2px solid rgba(0, 180, 216, 0.2); padding: 1.5rem; border-radius: 12px; transition: all 0.3s ease;">
+            <h3 style="margin-top: 0;">{{ l.nombre }}</h3>
+            <p><strong>ID:</strong> {{ lid }}</p>
+            <p><strong>Propietario:</strong> {{ l.propietario_id }}</p>
+            <a href="{{ url_for('productos', local_id=lid) }}" class="btn" style="width: 100%; text-align: center;">📦 Ver Productos</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info">📋 No hay locales registrados aún.</div>
+    {% endif %}
+  </div>
+{% endblock %}
